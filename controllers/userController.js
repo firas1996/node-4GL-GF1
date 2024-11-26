@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const ApiFeatures = require("../utils/ApiFeatures");
 
 exports.createUser = async (req, res) => {
   try {
@@ -18,35 +19,11 @@ exports.createUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const extraFields = ["page", "limit", "sort"];
-    console.log(req.query);
-    let queryObj = { ...req.query }; // age: {$gt:50}
-    extraFields.forEach((element) => {
-      delete queryObj[element];
-    });
-    // const users = await User.find().where("name").equals(req.query.name);
-    // 1) Filtering
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(lt|lte|gt|gte)\b/g, (opt) => `$${opt}`);
-    let querry = User.find(JSON.parse(queryStr));
-
-    // 2) Pagination:
-
-    const page = req.query.page || 1;
-    const limit = req.query.limit || 6;
-    const skip = (page - 1) * limit;
-    querry = querry.skip(skip).limit(limit);
-
-    // 3) Sorting:
-
-    if (req.query.sort) {
-      const sort = req.query.sort.split(",").join(" ");
-      querry = querry.sort(sort);
-    } else {
-      querry = querry.sort("-created_at");
-    }
-
-    const users = await querry;
+    const features = new ApiFeatures(User.find(), req.query)
+      .filter()
+      .pagination()
+      .sort();
+    const users = await features.query;
 
     res.status(200).json({
       status: "success",
