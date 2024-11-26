@@ -18,7 +18,7 @@ exports.createUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const extraFields = ["page", "limit"];
+    const extraFields = ["page", "limit", "sort"];
     console.log(req.query);
     let queryObj = { ...req.query }; // age: {$gt:50}
     extraFields.forEach((element) => {
@@ -36,6 +36,15 @@ exports.getAllUsers = async (req, res) => {
     const limit = req.query.limit || 6;
     const skip = (page - 1) * limit;
     querry = querry.skip(skip).limit(limit);
+
+    // 3) Sorting:
+
+    if (req.query.sort) {
+      const sort = req.query.sort.split(",").join(" ");
+      querry = querry.sort(sort);
+    } else {
+      querry = querry.sort("-created_at");
+    }
 
     const users = await querry;
 
