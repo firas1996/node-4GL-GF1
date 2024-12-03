@@ -18,19 +18,20 @@ class ApiFeatures {
     return this;
   }
   pagination() {
-    const page = req.query.page || 1;
-    const limit = req.query.limit || 6;
+    const page = this.queryStr.page || 1;
+    const limit = this.queryStr.limit || 6;
     const skip = (page - 1) * limit;
     this.query = this.query.skip(skip).limit(limit);
     return this;
   }
   sort() {
-    if (req.query.sort) {
-      const sort = req.query.sort.split(",").join(" ");
+    if (this.queryStr.sort) {
+      const sort = this.queryStr.sort.split(",").join(" ");
       this.query = this.query.sort(sort);
     } else {
       this.query = this.query.sort("-created_at");
     }
+    console.log("zzz");
     return this;
   }
 }

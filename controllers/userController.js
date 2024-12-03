@@ -19,6 +19,7 @@ exports.createUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
+    console.log("aaa");
     const features = new ApiFeatures(User.find(), req.query)
       .filter()
       .pagination()
