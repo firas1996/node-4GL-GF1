@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+
 const myToken = (id, name) => {
   return jwt.sign({ id, name }, process.env.SECRET_KEY, {
     expiresIn: "1d",
@@ -38,7 +39,7 @@ exports.signin = async (req, res, next) => {
       });
     }
     const user = await User.findOne({ email });
-    if (!user || !(await user.correctPassword(user.password, password))) {
+    if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(401).json({
         status: "fail",
         message: "email or password are incorrect",
@@ -54,7 +55,7 @@ exports.signin = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       status: "fail",
-      message: err,
+      message: error,
     });
   }
 };
