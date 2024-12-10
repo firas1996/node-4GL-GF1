@@ -104,7 +104,7 @@ exports.protected = async (req, res, next) => {
         message: "this session is expired please try and login again ... !!!!",
       });
     }
-
+    req.user = theUser;
     next();
   } catch (error) {
     res.status(400).json({
@@ -112,4 +112,22 @@ exports.protected = async (req, res, next) => {
       message: error,
     });
   }
+};
+
+exports.checkRole = (...roles) => {
+  return async (req, res, next) => {
+    try {
+      if (!roles.includes(req.user.role)) {
+        return res.status(401).json({
+          message: "you are not allowwer to do this ... !!!!",
+        });
+      }
+      next();
+    } catch (error) {
+      res.status(400).json({
+        status: "fail",
+        message: error,
+      });
+    }
+  };
 };
