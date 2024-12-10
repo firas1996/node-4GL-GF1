@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  password_updated_at: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 userSchema.pre("save", async function (next) {
@@ -51,6 +55,14 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.correctPassword = async function (pass, cPass) {
   return await bcrypt.compare(pass, cPass);
+};
+
+userSchema.methods.changedPasswordDate = function (JWTTime) {
+  const passUpdateTime = parseInt(this.password_updated_at.getTime() / 1000);
+  // console.log("aaa");
+  console.log(JWTTime);
+  console.log(passUpdateTime);
+  return JWTTime < passUpdateTime;
 };
 
 const User = mongoose.model("User", userSchema);
